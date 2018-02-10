@@ -1,0 +1,359 @@
+<?php
+/**
+ * The template for displaying all pages.
+ *
+ * This is the template that displays all pages by default.
+ * Please note that this is the WordPress construct of pages
+ * and that other 'pages' on your WordPress site will use a
+ * different template.
+ *
+ * @package aaronpricefellows
+ */
+
+get_header();
+
+// for the acf modal form
+// all user data needs to be instantiated first
+$user_info = (isset($_GET['author_name'])) ? get_user_by('slug', $author_name) : get_userdata(intval($author));
+$user_meta = get_user_meta($user_info->ID, '', false);
+$user_meta_kyle = get_user_meta(715, '', false);
+$user_id = $user_info->ID;
+?>
+<?php ?>
+<div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+        <?php get_template_part('content', 'rowcrumbs') ?>
+        <!-- START Author page -->
+        <div class="row user-profile">
+            <?php
+            if(isset($_GET['updated']))
+            if( $_GET['updated'] == 'true'): ?>
+            <div class="large-offset-4 small-10 columns text-center">
+                <div data-alert class="alert-box success radius">
+                    Your profile has been updated!
+                    <a href="#" class="close">&times;</a>
+                </div>
+            </div>
+            <?php endif; ?>
+            <div class="large-offset-2 medium-6 small-10 columns text-center">
+                <h1>Fellow Profile</h1>
+                <div class="userimg"><?php echo get_avatar( $user_id, 512 ); ?></div>
+                <?php //echo dev_out(ap_fellow_or_alumni($user_id)); ?>
+                <?php
+                // insert test data into my bio
+//                update_user_meta(715, 'description', 'it fired...', $pre_value);
+                ?>
+                <pre>
+                    <?php
+//                    $health_fields = array();
+//                    $hfields = acf_get_fields(2472);
+//                    foreach($hfields as $f){
+//                        array_push($health_fields, $f['name']);
+//                    }
+//                    print_r($author);
+                    ?>
+                    </pre>
+            </div>
+
+            <div class="large-10 columns">
+                <div class="fellowinfo">
+                    <p><?php echo $user_info->first_name." ".$user_info->last_name ?></p>
+                    <p>Class of <?php echo get_field('fellow_class', 'user_'.$user_id) ?></p>
+                    <?php if ( is_user_logged_in() ) : ?>
+                        <p>
+                            <?php if(get_userdata($user_id)->data->user_email): ?>
+                                <a href="mailto:<?php echo get_userdata($user_id)->data->user_email; ?>"><?php echo get_userdata($user_id)->data->user_email; ?></a>
+                            <?php else: ?>
+                                no email avaibable...
+                            <?php endif; ?>
+                        </p>
+                    <?php endif; ?>
+                    <?php if(get_field("fellow_city", "user_".$user_id)) :  ?>
+                        <p>City: <?php echo get_field("fellow_city", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+                    <?php if(get_field("fellow_state", "user_".$user_id)) :  ?>
+                        <p>State: <?php echo get_field("fellow_state", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+                    <?php if(get_field("fellow_profession_employer", "user_".$user_id)) :  ?>
+                        <p>Currently Working @<?php echo get_field("fellow_profession_employer", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_high_school", "user_".$user_id)) :  ?>
+                        <p>High School: <?php echo get_field("fellow_high_school", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_undergraduate_college", "user_".$user_id)) :  ?>
+                        <p>Undergraduate College: <?php echo get_field("fellow_undergraduate_college", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_undergraduate_degree", "user_".$user_id)) :  ?>
+                        <p>Undergraduate Degree: <?php echo get_field("fellow_undergraduate_degree", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_undergraduate_major", "user_".$user_id)) :  ?>
+                        <p>Undergraduate Major: <?php echo get_field("fellow_undergraduate_major", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_graduate_college", "user_".$user_id)) :  ?>
+                        <p>Graduate School: <?php echo get_field("fellow_graduate_college", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_graduate_degree", "user_".$user_id)) :  ?>
+                        <p>Graduate Degree: <?php echo get_field("fellow_graduate_degree", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_graduate_field", "user_".$user_id)) :  ?>
+                        <p>Graduate Field: <?php echo get_field("fellow_graduate_field", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_profession_title", "user_".$user_id)) :  ?>
+                        <p>Professional Title: <?php echo get_field("fellow_profession_title", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if(get_field("fellow_profession_career_category", "user_".$user_id)) :  ?>
+                        <p>Career Category: <?php echo get_field("fellow_profession_career_category", "user_".$user_id); ?></p>
+                    <?php endif; ?>
+
+                    <?php if($user_meta['description'][0]): ?>
+                        <p> About Me: <?php echo $user_meta['description'][0] ?></p>
+                    <?php endif; ?>
+
+                    <?php
+                        // Determine if the current user is a fellow?
+                        $current_user = wp_get_current_user();
+                        if(is_current_fellow($user_id, $current_user)):
+                    ?>
+                    <p><a href="#" data-reveal-id="myModal">Update my profile</a></p>
+                    <p><a href="/reset-your-password/">Update my password</a></p>
+
+                    <div id="myModal" class="reveal-modal small-6" data-reveal>
+                        <h2><?php echo $user_info->first_name." ".$user_info->last_name ?></h2>
+                        <p class="lead">UPDATE YOUR PROFILE</p>
+                        <p><?php
+
+                            // ASSES WHETHER AUTHOR IS FELLOW OR ALUMNI
+                            $is_fellow = ap_fellow_or_alumni($user_id);
+
+                            if($is_fellow == 'fellow')
+                            {//*** AUTHOR IS CURRENT FELLOW ***//
+                                $default_user_fields = array(
+                                    'First Name' => 'first_name',
+                                    'Last Name' => 'last_name',
+                                    'Primary Email' => 'user_email',
+                                    'About Me' => 'description'
+                                );
+
+                                $before_html = ap_field_label_template($user_id, $default_user_fields);
+
+
+                                $health_fields = array();
+                                $hfields = acf_get_fields(2472);
+                                foreach ($hfields as $f) {
+                                    array_push($health_fields, $f['name']); //only show dietary for alumni, all others are fellow only
+                                }
+
+                                $profile_fields = array(
+                                    'custom_profile_image',
+                                    'fellow_high_school',
+                                    'fellow_address_1',
+                                    'fellow_address_2',
+                                    'fellow_city',
+                                    'fellow_state',
+                                    'fellow_zip',
+                                    'fellow_country',
+                                    'fellow_phone_home',
+                                    'fellow_phone_cell',
+                                    'fellow_phone_work',
+                                    'fellow_gmail', //fellow
+                                    'fellow_birthplace', //fellow
+                                    'fellow_citizen', //fellow
+                                    'fellow_dob', //fellow
+                                    'fellow_race',
+                                    'fellow_sex',
+                                    'fellow_social_num',//fellow
+                                );
+
+                                $intern_fields = array( //all fellows only
+                                    'fellow_prof_location',
+                                    'fellow_prof_employer',
+                                    'fellow_prof_employer',
+                                    'fellow_Internship_phone',
+                                    'fellow_internship_contact_email',
+                                    'fellow_internship_prop_hours',
+                                    'fellow_prof_start_date'
+                                );
+
+                                $parents_fields = array();
+                                $pfields = acf_get_fields(2493);
+                                foreach ($pfields as $pf) {
+                                    array_push($parents_fields, $pf['name']);//all these are fellows only
+                                }
+
+                                $other_fields = array(
+                                    'fellow_prefer_communication',
+                                );
+
+                                $profile_fields = array_merge(
+                                    $profile_fields,
+                                    $intern_fields,
+                                    $parents_fields,
+                                    $other_fields);
+
+                                $fellow_user_form_args = array(
+                                    'post_title' => false,
+                                    'html_before_fields' => $before_html,
+                                    'post_id' => 'user_' . $user_id,
+                                    'field_groups' => array(2284, 2608),
+                                    'fields' => $profile_fields,
+                                    'form' => true
+                                );
+                            }
+                            elseif($is_fellow == 'alummi')
+                            {//*** AUTHOR IS ALUMNI ***//
+                                $default_user_fields = array(
+                                    'First Name' => 'first_name',
+                                    'Last Name' => 'last_name',
+                                    'Primary Email' => 'user_email',
+                                    'About Me' => 'description'
+                                );
+
+                                $before_html = ap_field_label_template($user_id, $default_user_fields);
+
+                                $health_fields = array('fellow_dietary');
+
+                                $profile_fields = array(
+                                    'custom_profile_image',
+                                    'fellow_high_school',
+                                    'fellow_address_1',
+                                    'fellow_address_2',
+                                    'fellow_city',
+                                    'fellow_state',
+                                    'fellow_zip',
+                                    'fellow_country',
+                                    'fellow_phone_home',
+                                    'fellow_phone_cell',
+                                    'fellow_phone_work',
+                                    'fellow_race',
+                                    'fellow_sex'
+                                );
+
+                                $education_fields = array( //all are alumni only
+                                    'fellow_undergraduate_college',
+                                    'fellow_undergraduate_major',
+                                    'fellow_undergraduate_degree',
+                                    'fellow_graduate_college',
+                                    'fellow_graduate_field',
+                                    'fellow_graduate_degree'
+                                );
+
+                                $profession_fields = array( //all are alumni only
+                                    'fellow_profession_employer',
+                                    'fellow_profession_title',
+                                    'fellow_profession_start_date',
+                                    'fellow_profession_career_category'
+                                );
+
+                                $other_fields = array(
+                                    'fellow_prefer_communication',
+                                    'fellow_spouse_fname', //alumni
+                                    'fellow_spouse_lname', //alumni
+                                    'fellow_children' //alumni
+                                );
+
+                                $profile_fields = array_merge(
+                                    $profile_fields,
+                                    $health_fields,
+                                    $education_fields,
+                                    $profession_fields,
+                                    $other_fields);
+
+                                $fellow_user_form_args = array(
+                                    'post_title' => false,
+                                    'html_before_fields' => $before_html,
+                                    'post_id' => 'user_' . $user_id,
+                                    'field_groups' => array(2284, 2608),
+                                    'fields' => $profile_fields,
+                                    'form' => true
+                                );
+                            }
+
+                            acf_form($fellow_user_form_args);
+//                            if( function_exists( 'ninja_forms_display_form')) {
+//                                ninja_forms_display_form( 1 );
+//                            }
+                        ?></p>
+                        <a class="close-reveal-modal">&#215;</a>
+                    </div>
+                    <?php
+                    endif;
+                    ?>
+                </div>
+                <?php
+                // TEST DATA DELETE FROM PRODUCTION
+//                echo $user_id."<br>";
+
+//                echo ap_field_label_template('metatest');
+
+                // test settings the user description with update_post_meta
+//                update_user_meta( $user_id, 'description', '' );
+
+//                $field_arr = get_user_meta($user_id, 'email', true);
+                $field_arr = get_userdata($user_id);
+
+//                $mssg = wp_update_user( array('ID' => $user_id, 'user_email' => 'test@dimstar.org'));
+
+//                print_r($mssg);
+
+//                echo '<br>';
+
+//                echo $field_arr->data->user_email;
+
+//                $meta_values = get_user_meta( $user_id );
+
+//                echo $user_id;
+
+//                echo 'email: '.var_dump(get_userdata($user_id)->data);
+
+//                echo dev_out( $meta_values );
+
+//                echo "<hr>";
+
+//                if( !empty($_POST['acf']) ) {
+//                    dev_out( $_POST['acf'] );
+//                }
+
+                // STOP TEST DATA
+                ?>
+                <script>
+
+                    // call the email validator
+                    jQuery(document).ready(function() {
+                        jQuery('#acf-user_email').on('blur', function(){
+                                jQuery.post(
+                                    ajaxurl,
+                                    {
+                                        'action': 'validateEmail_callback',
+                                        'data':  jQuery('#acf-user_email').val()
+                                    },
+                                    function (response){
+                                        console.log('responded: ' + response);
+                                        if(response === 'false'){
+                                            alert('Email is invalid, please re-enter a correct one.');
+                                            jQuery('#acf-user_email');
+                                        }else{
+                                            jQuery('#acf-user_email');
+                                        }
+                                    }
+                                );
+
+                        });
+                    })
+                </script>
+            </div>
+        </div><!-- END Author page -->
+    </main><!-- #main -->
+</div><!-- #primary -->
+
+<?php //get_sidebar(); ?>
+<?php get_footer(); ?>
+
